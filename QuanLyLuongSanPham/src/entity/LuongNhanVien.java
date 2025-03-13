@@ -1,16 +1,18 @@
 package entity;
 
+import java.math.BigDecimal;
+
 public class LuongNhanVien {
     protected String maLuong;
     protected int thang;
     protected int nam;
-    protected double luong;
+    protected BigDecimal luong; // Sửa từ double sang BigDecimal
     protected NhanVienHanhChinh nhanVienHanhChinh;
 
     public LuongNhanVien() {
     }
 
-    public LuongNhanVien(String maLuong, int thang, int nam, double luong) {
+    public LuongNhanVien(String maLuong, int thang, int nam, BigDecimal luong) {
         this.maLuong = maLuong;
         this.thang = thang;
         this.nam = nam;
@@ -41,11 +43,11 @@ public class LuongNhanVien {
         this.nam = nam;
     }
 
-    public double getLuong() {
+    public BigDecimal getLuong() { // Sửa kiểu trả về
         return luong;
     }
 
-    public void setLuong(double luong) {
+    public void setLuong(BigDecimal luong) { // Sửa tham số đầu vào
         this.luong = luong;
     }
 

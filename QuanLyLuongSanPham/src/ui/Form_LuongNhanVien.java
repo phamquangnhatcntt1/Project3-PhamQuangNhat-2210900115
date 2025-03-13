@@ -18,9 +18,11 @@ import java.awt.event.MouseListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.text.DecimalFormat;
 
 public class Form_LuongNhanVien extends JPanel {
     /**
@@ -254,29 +256,65 @@ public class Form_LuongNhanVien extends JPanel {
         btnThem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (cbcMaNV.getSelectedIndex() == 0) {
-                    for (NhanVienHanhChinh nv : nhanVienHanhChinh_dao.getLS()) {
-                        LuongNhanVien luongNhanVien = new LuongNhanVien("L001", Integer.parseInt(cbcThang.getSelectedItem().toString()),
-                                Integer.parseInt(cbcNam.getSelectedItem().toString()), nv.getLuongCoBan() * nv.getHeSoLuong().getHeSoLuong() + nv.getPhuCap());
-                        luongNhanVien.setNhanVienHanhChinh(nv);
-                        if (!luongNhanVien_dao.TimKiem(nv.getMaNV(), luongNhanVien.getThang(), luongNhanVien.getNam())) {
-                            luongNhanVien_dao.addLuongNhanVien(luongNhanVien);
+                try {
+                    int thang = Integer.parseInt(cbcThang.getSelectedItem().toString());
+                    int nam = Integer.parseInt(cbcNam.getSelectedItem().toString());
+
+                    // Định dạng số thập phân
+                    DecimalFormat df = new DecimalFormat("0.##");
+
+
+
+                    if (cbcMaNV.getSelectedIndex() == 0) {
+                        for (NhanVienHanhChinh nv : nhanVienHanhChinh_dao.getLS()) {
+                            if (nv != null && nv.getHeSoLuong() != null) {
+                                // Tính lương bằng BigDecimal
+                                BigDecimal luongCoBan = BigDecimal.valueOf(nv.getLuongCoBan());
+                                BigDecimal heSoLuong = BigDecimal.valueOf(nv.getHeSoLuong().getHeSoLuong());
+                                BigDecimal phuCap = BigDecimal.valueOf(nv.getPhuCap());
+                                BigDecimal luong = luongCoBan.multiply(heSoLuong).add(phuCap);
+
+                                LuongNhanVien luongNhanVien = new LuongNhanVien("L001", thang, nam, luong);
+                                luongNhanVien.setNhanVienHanhChinh(nv);
+
+                                if (!luongNhanVien_dao.TimKiem(nv.getMaNV(), thang, nam)) {
+                                    luongNhanVien_dao.addLuongNhanVien(luongNhanVien);
+                                }
+                            }
+                        }
+                        table.setModel(new LuongNhanVien_Table(luongNhanVien_dao.getLS()));
+                    } else {
+                        String maNV = cbcMaNV.getSelectedItem().toString();
+                        NhanVienHanhChinh nhanVienHanhChinh = nhanVienHanhChinh_dao.TimKiemMa(maNV);
+
+                        if (nhanVienHanhChinh != null && nhanVienHanhChinh.getHeSoLuong() != null) {
+                            // Tính lương bằng BigDecimal
+                            BigDecimal luongCoBan = BigDecimal.valueOf(nhanVienHanhChinh.getLuongCoBan());
+                            BigDecimal heSoLuong = BigDecimal.valueOf(nhanVienHanhChinh.getHeSoLuong().getHeSoLuong());
+                            BigDecimal phuCap = BigDecimal.valueOf(nhanVienHanhChinh.getPhuCap());
+                            BigDecimal luong = luongCoBan.multiply(heSoLuong).add(phuCap);
+
+                            LuongNhanVien luongNhanVien = new LuongNhanVien("L001", thang, nam, luong);
+                            luongNhanVien.setNhanVienHanhChinh(nhanVienHanhChinh);
+
+                            if (!luongNhanVien_dao.TimKiem(maNV, thang, nam)) {
+                                luongNhanVien_dao.addLuongNhanVien(luongNhanVien);
+                            }
+                            table.setModel(new LuongNhanVien_Table(luongNhanVien_dao.getLS()));
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Không tìm thấy nhân viên hoặc hệ số lương không hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
                         }
                     }
-                    table.setModel(new LuongNhanVien_Table(luongNhanVien_dao.getLS()));
-                } else {
-                    NhanVienHanhChinh nhanVienHanhChinh = nhanVienHanhChinh_dao.TimKiemMa(cbcMaNV.getSelectedItem().toString());
-                    LuongNhanVien luongNhanVien = new LuongNhanVien("L001", Integer.parseInt(cbcThang.getSelectedItem().toString()),
-                            Integer.parseInt(cbcNam.getSelectedItem().toString()), nhanVienHanhChinh.getLuongCoBan() * nhanVienHanhChinh.getHeSoLuong().getHeSoLuong() + nhanVienHanhChinh.getPhuCap());
-                    luongNhanVien.setNhanVienHanhChinh(nhanVienHanhChinh);
-                    if (!luongNhanVien_dao.TimKiem(nhanVienHanhChinh.getMaNV(), luongNhanVien.getThang(), luongNhanVien.getNam())) {
-                        luongNhanVien_dao.addLuongNhanVien(luongNhanVien);
-                    }
-                    table.setModel(new LuongNhanVien_Table(luongNhanVien_dao.getLS()));
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "Tháng hoặc năm không đúng định dạng!", "Lỗi định dạng", JOptionPane.ERROR_MESSAGE);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Đã xảy ra lỗi: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    ex.printStackTrace();
                 }
-
             }
         });
+
+
         //Sự Kiện Xóa
         btnXoa.addActionListener(new ActionListener() {
             @Override

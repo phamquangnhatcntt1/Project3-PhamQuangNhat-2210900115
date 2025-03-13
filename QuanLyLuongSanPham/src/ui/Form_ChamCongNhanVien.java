@@ -49,7 +49,7 @@ public class Form_ChamCongNhanVien extends JPanel {
         pnNorth.setLayout(new BorderLayout());
         JLabel lblTieuDe = new JLabel("CHẤM CÔNG NHÂN VIÊN HÀNH CHÍNH");
         lblTieuDe.setFont(new Font("arial", Font.BOLD,20));
-        lblTieuDe.setForeground(Color.RED);
+        lblTieuDe.setForeground(Color.RED);	
         pnTieuDe.add(lblTieuDe);
         pnNorth.add(pnTieuDe);
 
@@ -130,18 +130,30 @@ public class Form_ChamCongNhanVien extends JPanel {
         lblLuongCa.setPreferredSize(lblPhongBan.getPreferredSize());
         lblNhanVien.setPreferredSize(lblPhongBan.getPreferredSize());
 
-        CaLamViec caLamViec = caLamViec_dao.TimKiemCaLam(cbcCaLam.getSelectedItem().toString());
-        txtGioLam.setText(caLamViec.getGioLam());
-        txtLuongCa.setText(String.valueOf(caLamViec.getLuongCa()));
+        Object selectedItem = cbcCaLam.getSelectedItem();
+        if (selectedItem != null) {
+            CaLamViec caLamViec = caLamViec_dao.TimKiemCaLam(selectedItem.toString());
+            txtGioLam.setText(caLamViec.getGioLam());
+            txtLuongCa.setText(String.valueOf(caLamViec.getLuongCa()));
+        } else {
+            JOptionPane.showMessageDialog(null, "Vui lòng chọn ca làm việc!");
+        }
 
         cbcCaLam.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                CaLamViec caLamViec = caLamViec_dao.TimKiemCaLam(cbcCaLam.getSelectedItem().toString());
-                txtGioLam.setText(caLamViec.getGioLam());
-                txtLuongCa.setText(String.valueOf(caLamViec.getLuongCa()));
+                Object selectedItem = cbcCaLam.getSelectedItem();
+                if (selectedItem != null) {
+                    CaLamViec caLamViec = caLamViec_dao.TimKiemCaLam(selectedItem.toString());
+                    txtGioLam.setText(caLamViec.getGioLam());
+                    txtLuongCa.setText(String.valueOf(caLamViec.getLuongCa()));
+                } else {
+                    txtGioLam.setText("");
+                    txtLuongCa.setText("");
+                }
             }
         });
+
 
 
         JButton btnThem,btnXoa,btnSua,btnThoat,btnXoaRong;
@@ -283,7 +295,14 @@ public class Form_ChamCongNhanVien extends JPanel {
                             trangThai,
                             nghiPhep);
                     chamCongNhanVien.setNhanVienHanhChinh(nhanVienHanhChinh_dao.TimKiemTen(txtNhanVien.getText()));
-                    chamCongNhanVien.setCaLamViec(caLamViec_dao.TimKiemCaLam(cbcCaLam.getSelectedItem().toString()));
+                    Object selectedItem = cbcCaLam.getSelectedItem();
+                    if (selectedItem != null) {
+                        chamCongNhanVien.setCaLamViec(caLamViec_dao.TimKiemCaLam(selectedItem.toString()));
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Vui lòng chọn ca làm việc!");
+                        return;
+                    }
+
                     if (chamCongNhanVien_dao.addChamCongNV(chamCongNhanVien)) {
                         try {
                             table.setModel(new ChamCongNV_Table(chamCongNhanVien_dao.getLS()));

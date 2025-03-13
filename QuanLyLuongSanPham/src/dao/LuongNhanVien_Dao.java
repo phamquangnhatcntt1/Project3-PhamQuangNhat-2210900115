@@ -34,7 +34,7 @@ public class LuongNhanVien_Dao {
             ResultSet rs = getResultSet("select_LNV");
             while(rs.next()){
                 LuongNhanVien luongNhanVien =new LuongNhanVien(rs.getString(1),rs.getInt(2),rs.getInt(3),
-                        rs.getDouble(4));
+                        rs.getBigDecimal(4));
                 luongNhanVien.setNhanVienHanhChinh(nhanVienHanhChinh_dao.TimKiemMa(rs.getString(5)));
                 ds.add(luongNhanVien);
             }
@@ -52,7 +52,7 @@ public class LuongNhanVien_Dao {
                     ",[MANV]) VALUES(?,?,?,?)");
             cnAdd.setInt(1, luongNhanVien.getThang());
             cnAdd.setInt(2, luongNhanVien.getNam());
-            cnAdd.setDouble(3, luongNhanVien.getLuong());
+            cnAdd.setBigDecimal(3, luongNhanVien.getLuong());
             cnAdd.setString(4, luongNhanVien.getNhanVienHanhChinh().getMaNV());
 
             int n = cnAdd.executeUpdate();
@@ -86,7 +86,7 @@ public class LuongNhanVien_Dao {
             ResultSet rs = stmt.executeQuery();
             while(rs.next()) {
                 luongNhanVien =new LuongNhanVien(rs.getString(1),rs.getInt(2),rs.getInt(3),
-                        rs.getDouble(4));
+                        rs.getBigDecimal(4));
                 luongNhanVien.setNhanVienHanhChinh(nhanVienHanhChinh_dao.TimKiemMa(rs.getString(5)));
             }
         }catch (SQLException e){
@@ -105,7 +105,7 @@ public class LuongNhanVien_Dao {
             ResultSet rs = stmt.executeQuery();
             while(rs.next()) {
                 luongNhanVien =new LuongNhanVien(rs.getString(1),rs.getInt(2),rs.getInt(3),
-                        rs.getDouble(4));
+                        rs.getBigDecimal(4));
                 luongNhanVien.setNhanVienHanhChinh(nhanVienHanhChinh_dao.TimKiemMa(rs.getString(5)));
             }
         }catch (SQLException e){
@@ -124,7 +124,7 @@ public class LuongNhanVien_Dao {
             ResultSet rs = stmt.executeQuery();
             while(rs.next()) {
                 LuongNhanVien luongNhanVien =new LuongNhanVien(rs.getString(1),rs.getInt(2),rs.getInt(3),
-                        rs.getDouble(4));
+                        rs.getBigDecimal(4));
                 luongNhanVien.setNhanVienHanhChinh(nhanVienHanhChinh_dao.TimKiemMa(rs.getString(5)));
                 list.add(luongNhanVien);
             }

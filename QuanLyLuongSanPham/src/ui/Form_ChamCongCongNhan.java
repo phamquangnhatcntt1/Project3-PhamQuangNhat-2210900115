@@ -145,9 +145,25 @@ public class Form_ChamCongCongNhan extends JPanel {
             }
         });
 
-        CaLamViec caLamViec = caLamViec_dao.TimKiemCaLam(cbcCaLam.getSelectedItem().toString());
-        txtGioLam.setText(caLamViec.getGioLam());
-        txtLuongCa.setText(String.valueOf(caLamViec.getLuongCa()));
+        try {
+            Object selectedItem = cbcCaLam.getSelectedItem();
+            if (selectedItem != null) {
+                CaLamViec caLamViec = caLamViec_dao.TimKiemCaLam(selectedItem.toString());
+                if (caLamViec != null) {
+                    txtGioLam.setText(caLamViec.getGioLam());
+                    txtLuongCa.setText(String.valueOf(caLamViec.getLuongCa()));
+                } else {
+                    txtGioLam.setText("Không tìm thấy");
+                    txtLuongCa.setText("0");
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Vui lòng chọn ca làm việc!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Lỗi khi tải ca làm việc!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+
 
 
         lblSanPham.setPreferredSize(lblCongNhan.getPreferredSize());

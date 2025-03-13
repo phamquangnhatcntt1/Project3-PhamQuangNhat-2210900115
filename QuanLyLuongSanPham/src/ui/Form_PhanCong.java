@@ -253,22 +253,41 @@ public class Form_PhanCong extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (tableSanPham.getSelectedRow() != -1) {
-                    PhanCong phanCong = new PhanCong(txtMa.getText().trim(),
-                            Integer.parseInt(txtSLCanLam.getText()));
-                    phanCong.setCongNhan(congNhan_dao.TimKiemTen(cbcTenCongNhan.getSelectedItem().toString()));
-                    phanCong.setCongDoan(congDoan_dao.TimKiemTen(cbcTenCD.getSelectedItem().toString()));
+                    String ma = txtMa.getText().trim();
+                    String slCanLamStr = txtSLCanLam.getText().trim();
+                    int slCanLam = 0;
+
+                    try {
+                        slCanLam = Integer.parseInt(slCanLamStr);
+                    } catch (NumberFormatException ex) {
+                        JOptionPane.showMessageDialog(null, "Số lượng cần làm phải là số nguyên hợp lệ!");
+                        return;
+                    }
+
+                    Object congNhanObj = cbcTenCongNhan.getSelectedItem();
+                    Object congDoanObj = cbcTenCD.getSelectedItem();
+
+                    if (congNhanObj == null || congDoanObj == null) {
+                        JOptionPane.showMessageDialog(null, "Vui lòng chọn đầy đủ công nhân và công đoạn!");
+                        return;
+                    }
+
+                    PhanCong phanCong = new PhanCong(ma, slCanLam);
+                    phanCong.setCongNhan(congNhan_dao.TimKiemTen(congNhanObj.toString()));
+                    phanCong.setCongDoan(congDoan_dao.TimKiemTen(congDoanObj.toString()));
+
                     if (phanCong_dao.addPhanCong(phanCong)) {
                         try {
                             table.setModel(new PhanCong_Table(phanCong_dao.getLS()));
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
-                    } else
-                        JOptionPane.showMessageDialog(null, "Bạn chưa nhập thông tin !");
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Bạn chưa nhập thông tin!");
+                    }
                     clearTextField();
                     table.setModel(new PhanCong_Table(phanCong_dao.getLS()));
                 }
-
             }
         });
         //Sự Kiện Xóa
